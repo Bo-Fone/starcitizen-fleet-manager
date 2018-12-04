@@ -8,8 +8,8 @@ framework:
     session:
         handler_id: Symfony\Component\HttpFoundation\Session\Storage\Handler\RedisSessionHandler
 
-    #esi: true
-    #fragments: true
+    esi: true
+    fragments: true
     php_errors:
         log: true
 

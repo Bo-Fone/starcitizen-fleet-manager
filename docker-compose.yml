@@ -11,6 +11,7 @@ services:
             target: build_php
             dockerfile: ./docker/Dockerfile
         hostname: php
+#        restart: unless-stopped
         environment:
             - REDIS_HOST=redis
             - REDIS_PORT=6379
@@ -27,6 +28,7 @@ services:
             target: build_apache
             dockerfile: ./docker/Dockerfile
         hostname: apache
+#        restart: unless-stopped
         environment:
             - PHP_HANDLER_HOST=php:9000
         networks:
@@ -36,6 +38,7 @@ services:
     mariadb:
         image: mariadb:10.3
         hostname: mariadb
+#        restart: unless-stopped
         volumes:
             - db:/var/lib/mysql
         environment:
@@ -64,3 +67,9 @@ services:
             - app
         ports:
             - 127.0.0.1:8081:8081
+    varnish:
+        image: cooptilleuls/varnish:6.0-alpine
+        hostname: varnish
+#        restart: unless-stopped
+        networks:
+            - app
