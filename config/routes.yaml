@@ -1,5 +1,5 @@
 logout:
     path: /logout
 
-discord_login:
-    path: /login/check-discord
+connect_discord_check:
+    path: /connect/discord/check

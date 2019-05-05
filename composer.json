@@ -10,7 +10,7 @@
         "ext-json": "*",
         "fabpot/goutte": "^3.2",
         "guzzlehttp/guzzle": "^6.3",
-        "hwi/oauth-bundle": "^0.6.3",
+        "knpuniversity/oauth2-client-bundle": "^1.28",
         "php-http/guzzle6-adapter": "^1.1",
         "php-http/httplug-bundle": "^1.12",
         "ramsey/uuid": "^3.8",
@@ -30,7 +30,8 @@
         "symfony/validator": "*",
         "symfony/web-link": "*",
         "symfony/webpack-encore-pack": "^1.0",
-        "symfony/yaml": "*"
+        "symfony/yaml": "*",
+        "wohali/oauth2-discord-new": "^1.0"
     },
     "require-dev": {
         "doctrine/data-fixtures": "^1.3",

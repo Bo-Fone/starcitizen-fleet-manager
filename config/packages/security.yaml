@@ -1,7 +1,9 @@
 security:
     providers:
-        oauth_user_provider:
-            id: App\Security\OAuthUserProvider
+        users:
+            entity:
+                class: 'App\Entity\User'
+                property: 'discordId'
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
@@ -13,18 +15,8 @@ security:
                 authenticators: ['App\Security\TokenAuthenticator']
         main:
             anonymous: true
-            oauth:
-                resource_owners:
-                    discord: /login/check-discord
-                login_path: /login
-                use_forward: false
-                failure_path: /login
-                always_use_default_target_path: true
-                default_target_path: '/#/profile'
-
-                oauth_user_provider:
-                    service: App\Security\OAuthUserProvider
-
+            guard:
+                authenticators: ['App\Security\DiscordAuthenticator']
             logout:
                 path: logout
 

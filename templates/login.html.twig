@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title 'Connexion - SC Fleet Manager' %}
+
+{% block body_attr 'app flex-row align-items-center' %}
+
+{% block body %}
+    <div id="app" data-discord-login-url="{{ path('connect_discord_start') }}"></div>
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ preload(asset('build/login.js')) }}"></script>
+{% endblock %}
