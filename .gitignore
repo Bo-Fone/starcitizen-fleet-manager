@@ -30,3 +30,7 @@ yarn-error.log
 /k8s/app-config.yaml
 /k8s/app-secrets.yaml
 /k8s/traefik-helm-values.yaml
+
+.terraform
+*.tfstate.*
+*.tfvars
