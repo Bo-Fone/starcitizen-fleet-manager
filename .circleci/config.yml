@@ -1,0 +1,57 @@
+version: 2.1
+jobs:
+    qa:
+        machine:
+            image: ubuntu-1604:201903-01
+        steps:
+            - checkout
+            - run: sed -i s/APP_ENV=.*/APP_ENV=test/g .env
+            - run: echo "${DOCKER_LOGIN_PASS}" | docker login --username ${DOCKER_LOGIN_USERNAME} --password-stdin registry.fleet-manager.space
+            - run: docker-compose -f docker-compose.ci.yml up -d
+            - run: docker-compose exec php composer install
+            - run: docker run --rm -it -v `pwd`:/app -w /app node:10-alpine sh -c "yarn install && yarn build"
+            - run: |
+                docker-compose exec php bin/console cache:warmup
+                docker-compose exec php chown -R $(id -u):$(id -g) var
+                setfacl -dR -m u:$(id -u):rwX -m u:82:rwX var
+                mkdir -p var/screenshots
+            - run: make qa
+            - store_artifacts:
+                path: var/screenshots
+    build:
+        machine:
+            image: ubuntu-1604:201903-01
+        steps:
+            - checkout
+            - run: echo ${STAGING_ENV_LOCAL} | base64 --decode - >.env.local
+            - run: echo "${DOCKER_LOGIN_PASS}" | docker login --username ${DOCKER_LOGIN_USERNAME} --password-stdin registry.fleet-manager.space
+            - run: DOCKER_BUILDKIT=1 docker image build --target=build_php_dev --build-arg ENV=dev --build-arg DUMP_ENV=1 --file=docker/Dockerfile --tag=registry.fleet-manager.space/fm-php:staging .
+            - run: DOCKER_BUILDKIT=1 docker image build --target=build_apache --file=docker/Dockerfile --tag=registry.fleet-manager.space/fm-apache:staging .
+            - run: docker image push registry.fleet-manager.space/fm-php:staging
+            - run: docker image push registry.fleet-manager.space/fm-apache:staging
+    deploy:
+        machine:
+            image: ubuntu-1604:201903-01
+        steps:
+            - add_ssh_keys:
+                  fingerprints: ["d4:de:92:2d:eb:71:63:82:db:a1:54:6d:76:e8:65:0d"]
+            - run: ssh circleci@${HOST_IP} -p ${HOST_SSH_PORT} ~/deploy-staging.sh
+workflows:
+    version: 2
+    staging:
+        jobs:
+            - qa
+            - build:
+                requires: ['qa']
+                filters:
+                    branches:
+                        only: ['develop', 'ci']
+            - deploy:
+                requires: ['build']
+                filters:
+                    branches:
+                        only: ['develop', 'ci']
+
+# For building testing app images
+# DOCKER_BUILDKIT=1 docker image build --target=build_php_dev --build-arg ENV=dev --build-arg DUMP_ENV=0 --file=docker/Dockerfile --tag=registry.fleet-manager.space/fm-php:test .
+# DOCKER_BUILDKIT=1 docker image build --target=build_apache_test --file=docker/Dockerfile --tag=registry.fleet-manager.space/fm-apache:test .
