@@ -35,7 +35,7 @@ jobs:
         steps:
             - add_ssh_keys:
                   fingerprints: ["d4:de:92:2d:eb:71:63:82:db:a1:54:6d:76:e8:65:0d"]
-            - run: ssh circleci@${HOST_IP} -p ${HOST_SSH_PORT} ~/deploy-staging.sh
+            - run: ssh -v circleci@${HOST_IP} -p ${HOST_SSH_PORT} ~/deploy-staging.sh
 workflows:
     version: 2
     staging:
